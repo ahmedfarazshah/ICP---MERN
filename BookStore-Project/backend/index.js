@@ -1,29 +1,35 @@
-import express from "express"
+import express, { response } from "express"
 import mongoose from "mongoose"
 import { PORT, MongoDbURL } from "./config.js"
-import { Book } from "./models/bookModel.js"
+import Book from "./models/bookModel.js"
+import bookRouter from "./routes/bookRoute.js"
+import cors from "cors"
 
 const app = express()
 
+// Middleware for parsing json body
+app.use(express.json())
+
+// Middleware for passing xml requests to frontend
+//1. cors with default setting
+// app.use(cors())
+// allow custom origins 
+app.use(cors({
+    origin : "https://localhost:5000/books",
+    methods : ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders : ["Content-Type"]
+}))
+
+// app.use(cors({origin: "true", credentials: true}));
+
 
 app.get("/", (req, res)=>{
-    res.send("this si ")
-})
-
-
-
-///////////////////////////////////////////////// This was conventional way of adding items in the collection////////////////////////.
-// const book1 = new Book({
-//     title : "living like a professional in kaluga",
-//     author : "Shul e menas girmenas shuwa hir",
-//     publishYear : 2024
-// })
-
-// book1.save() this was the old method but now what we will do is that we will use postman for adding , updating, or removing
-////////////////////////////////////////////////////////////////// ///////////////////////////////              /////////////////////////////////
-
-
-
+    res.send(`Welcome to the Mern stack`)
+    })
+    
+    
+app.use("/books", bookRouter)
+ 
 
 mongoose.connect(MongoDbURL).then(()=>{
     console.log("Successfully connected to the database")
